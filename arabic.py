@@ -81,6 +81,7 @@ def outfile():
     file = open("arabic_poems.txt", "w+", encoding="utf-8")
     file.write(data)
     file.close()
+   
     
     return data
 
@@ -189,16 +190,14 @@ def main(num_poems):
     x, y, num_vocab, min_val, tokenizer = create_sequences(data, 60)
     model = run_model(x, y, num_vocab, min_val)
 
-    f = open('gen_poems.txt', 'w+')
+    poems = []
     for i in range(num_poems):
         start = np.random.randint(0, x.shape[1]-1)
         seed_text = x[start]
         whole, gen = gen_poem(model, tokenizer, seed_text, 50, min_val)
-        f.write(whole)
-        f.write('\n')
+        poems.append(whole)
         
-    f.close()
-    print("Poems written to output file 'gen_poems.txt")
+    return poems
 
 
 
@@ -206,5 +205,10 @@ def main(num_poems):
 
 if __name__ == "__main__":
     print("Number of poems to generate: ")
-    num_poems = input()
-    main(num_poems)
+    num_poems = int(input())
+    poems = main(num_poems)
+    f = open('gem_poems.txt', 'w+', encoding='utf-8')
+    poems = '\n\n'.join(poems)
+    f.write(poems)
+    f.close()
+    print("Poems written to 'gen_poems.txt'")
