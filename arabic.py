@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Aug 22 03:00:27 2020
+Created on Mon Aug 17 03:00:27 2020
 
 @author: alyssa
 
 Script to generate Arabic poems using an LSTM (long short-term memory) model
-
-Poems scraped from https://www.poetrytranslation.org/
 """
 
 
@@ -355,12 +353,14 @@ def gen_poem(model, tokenizer, seed_text, length_poem: int, seq_length: int)-> t
 
 
 
-def main(num_poems: int, sequence_len=60)->list:
+def main(num_poems: int, model_bool: str, sequence_len=60)->list:
     '''
     Parameters
     ----------
     num_poems : int
         Number of poems to generate, inputted by the user
+    model_bool : str
+        'y' to use pre-trained model if available, 'n' otherwise
     Returns
     -------
     list
@@ -369,9 +369,14 @@ def main(num_poems: int, sequence_len=60)->list:
     '''
     data = outfile()
     x, y, num_vocab, min_val, tokenizer = create_sequences(data, sequence_len)
-    try:
-        model = load_model('model.h5')
-    except:
+    
+    if model_bool == 'y':
+        try:
+            model = load_model('model.h5')
+        except:
+            print('No available model file')
+            model = run_model(x, y, num_vocab, min_val)
+    else:
         model = run_model(x, y, num_vocab, min_val)
 
     poems = list()
@@ -391,9 +396,15 @@ def main(num_poems: int, sequence_len=60)->list:
 
 
 if __name__ == "__main__":
+    print("Hit ENTER after typing in values\n")
     print("Number of poems to generate: ")
     num_poems = int(input())
-    poems = main(num_poems)
+    print("Use pre-existing model? y/n: ")
+    model_bool = (input()).lower()
+    if model_bool != 'y' and model_bool != 'n':
+        print("Enter y or n: ")
+        model_bool = (input()).lower()
+    poems = main(num_poems, model_bool)
     f = open('gen_poems.txt', 'w+', encoding='utf-8')
     poems = '\n\n'.join(poems)
     f.write(poems)
