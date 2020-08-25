@@ -1,4 +1,5 @@
 # Arabic_NLP
+Personal project to use an LSTM to generate novel Arabic poems.
 
 ## Setup
   1. Download the repository
